@@ -10,6 +10,21 @@ if [ -d /opt/app-root/wheelhouse ]; then
     exec /opt/app-root/s2i/run
 fi
 
-# Run the deployment phase with support for action hooks.
+# Run the Django application directly without powershift.
 
-exec powershift image run
+APP_ROOT=/opt/app-root
+cd "${APP_ROOT}" || exit 1
+
+# Use the Python from the S2I image if present
+if [ -x "${APP_ROOT}/bin/python" ]; then
+    PYTHON="${APP_ROOT}/bin/python"
+else
+    PYTHON=python
+fi
+
+# If your project uses manage.py at APP_ROOT, use this:
+exec "${PYTHON}" manage.py runserver 0.0.0.0:${PORT:-8080}
+
+# Alternatively, if the project is structured as a WSGI module (e.g. blog_django_py.wsgi),
+# you can use gunicorn instead, provided gunicorn is in requirements.txt:
+# exec "${PYTHON}" -m gunicorn blog_django_py.wsgi:application --bind 0.0.0.0:${PORT:-8080}
