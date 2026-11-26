@@ -9,11 +9,3 @@ set -eo pipefail
 if [ -d /opt/app-root/wheelhouse ]; then
     exec /opt/app-root/s2i/assemble
 fi
-
-# Install 'powershift-cli[image]' package to add support for action hooks.
-
-#pip install powershift-cli[image]
-
-# Run the build phase with support for action hooks.
-
-#exec powershift image assemble
